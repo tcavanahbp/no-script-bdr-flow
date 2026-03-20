@@ -1,0 +1,254 @@
+import { useState } from "react";
+
+const emptyInitiatives = () => [{t:""},{t:""},{t:""},{t:""},{t:""},{t:""}];
+
+const emptyOkr = (kr1, kr2) => ({
+  objective: "",
+  krs: [{l:kr1,from:"",to:""},{l:kr2,from:"",to:""},{l:"",from:"",to:""}],
+  inits: emptyInitiatives(),
+});
+
+const S0 = {
+  theme: {title:"", desc:""},
+  reframe: {title:"", desc:""},
+  equation: {
+    current: {arr:"", arrv:"", arra:"", ebitda:""},
+    target:  {arr:"", arrv:"", arra:"", ebitda:""},
+  },
+  okrs: [
+    emptyOkr("Monthly Net New SaaS ARR","Monthly Gross New Locations"),
+    emptyOkr("Monthly New Upsell / Expansion ARR","Monthly Gross Retention"),
+    emptyOkr("Product Utilization","Launch Upsellable Products"),
+  ],
+};
+
+const TABS = ["Dashboard","Theme","Reframe","OKRs","Core Value Equation"];
+
+const iStyle = {
+  display:"block", width:"100%", boxSizing:"border-box",
+  border:"1px solid #e5e7eb", borderRadius:8,
+  padding:"9px 12px", fontSize:13, outline:"none", background:"#fff",
+};
+const lStyle = {
+  display:"block", fontSize:11, fontWeight:600, color:"#6b7280",
+  textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6,
+};
+const box = (extra) => ({
+  borderRadius:10, padding:"14px 16px", marginBottom:10, ...extra
+});
+
+export default function App() {
+  const [s, setS] = useState(S0);
+  const [tab, setTab] = useState(0);
+
+  const set = (path, val) => setS(prev => {
+    const next = JSON.parse(JSON.stringify(prev));
+    const keys = path.split(".");
+    let cur = next;
+    for (let i = 0; i < keys.length - 1; i++) cur = cur[keys[i]];
+    cur[keys[keys.length - 1]] = val;
+    return next;
+  });
+
+  const eqRows = [
+    { key:"arr",   label:"ARR",    machine:"Product"     },
+    { key:"arrv",  label:"ARRv",   machine:"CX Machine"  },
+    { key:"arra",  label:"ARRa",   machine:"GTM Machine" },
+    { key:"ebitda",label:"EBITDA", machine:"Talent"      },
+  ];
+
+  return (
+    <div style={{fontFamily:"Inter,sans-serif", minHeight:"100vh", background:"#f8f9fb"}}>
+
+      <div style={{background:"#fff", borderBottom:"1px solid #e5e7eb", padding:"18px 32px", display:"flex", alignItems:"center", gap:12}}>
+        <div style={{width:10,height:10,borderRadius:"50%",background:"#2563eb"}}/>
+        <span style={{fontWeight:700,fontSize:16,color:"#111"}}>blueprint</span>
+        <span style={{fontSize:13,color:"#9ca3af",marginLeft:4}}>/ Company Strategy Tracker</span>
+      </div>
+
+      <div style={{background:"#fff", borderBottom:"1px solid #e5e7eb", padding:"0 32px", display:"flex"}}>
+        {TABS.map((t,i) => (
+          <button key={t} onClick={()=>setTab(i)} style={{
+            padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer",
+            fontWeight:tab===i?600:400, color:tab===i?"#2563eb":"#6b7280",
+            borderBottom:tab===i?"2px solid #2563eb":"2px solid transparent",
+          }}>{t}</button>
+        ))}
+      </div>
+
+      <div style={{maxWidth:920, margin:"0 auto", padding:"36px 24px"}}>
+
+        {/* DASHBOARD */}
+        {tab === 0 && (
+          <div>
+            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>Strategy Dashboard</h2>
+            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>A summary of your company strategy at a glance.</p>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+              <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:12,padding:16}}>
+                <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10}}>Annual Theme</div>
+                <p style={{fontSize:15,fontWeight:600,color:s.theme.title?"#111":"#d1d5db",marginBottom:4}}>{s.theme.title||"No theme set"}</p>
+                <p style={{fontSize:13,color:"#6b7280"}}>{s.theme.desc}</p>
+              </div>
+              <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:12,padding:16}}>
+                <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10}}>The Reframe</div>
+                <p style={{fontSize:15,fontWeight:600,color:s.reframe.title?"#111":"#d1d5db",marginBottom:4}}>{s.reframe.title||"No reframe set"}</p>
+                <p style={{fontSize:13,color:"#6b7280"}}>{s.reframe.desc}</p>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+              {s.okrs.map((okr,i) => (
+                <div key={i} style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:12,padding:16}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"#2563eb",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8}}>Objective {i+1}</div>
+                  <p style={{fontSize:12,fontWeight:600,color:okr.objective?"#374151":"#d1d5db",marginBottom:8}}>{okr.objective||"No objective set"}</p>
+                  {okr.krs.filter(kr=>kr.l).map((kr,ki)=>(
+                    <div key={ki} style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#6b7280",marginBottom:4,borderBottom:"1px solid #f3f4f6",paddingBottom:4}}>
+                      <span>{kr.l}</span>
+                      {(kr.from||kr.to)&&<span style={{color:"#2563eb",fontWeight:600}}>{kr.from} → {kr.to}</span>}
+                    </div>
+                  ))}
+                  <div style={{marginTop:8}}>
+                    {okr.inits.filter(x=>x.t).map((x,ii)=>(
+                      <div key={ii} style={{background:"#f8f9fb",borderRadius:8,padding:"6px 10px",marginBottom:4,fontSize:11,color:"#374151"}}>● {x.t}</div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* THEME */}
+        {tab === 1 && (
+          <div>
+            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>Annual Theme</h2>
+            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>The single overarching idea guiding your company this year.</p>
+            <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:14,padding:24}}>
+              <label style={lStyle}>Theme Title</label>
+              <input style={{...iStyle,marginBottom:16}} placeholder="e.g. The Year We Scale" value={s.theme.title} onChange={e=>set("theme.title",e.target.value)}/>
+              <label style={lStyle}>Theme Description</label>
+              <textarea style={{...iStyle,minHeight:100,resize:"vertical"}} placeholder="Describe the idea guiding the company's decisions, priorities, and energy this year." value={s.theme.desc} onChange={e=>set("theme.desc",e.target.value)}/>
+            </div>
+          </div>
+        )}
+
+        {/* REFRAME */}
+        {tab === 2 && (
+          <div>
+            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>The Reframe</h2>
+            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>Shift from old thinking to a more powerful framing.</p>
+            <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:14,padding:24}}>
+              <label style={lStyle}>Reframe Title</label>
+              <input style={{...iStyle,marginBottom:16}} placeholder="e.g. From a product company to a platform company" value={s.reframe.title} onChange={e=>set("reframe.title",e.target.value)}/>
+              <label style={lStyle}>Reframe Description</label>
+              <textarea style={{...iStyle,minHeight:100,resize:"vertical"}} placeholder="Describe the shift in thinking that will inspire action and align your team." value={s.reframe.desc} onChange={e=>set("reframe.desc",e.target.value)}/>
+            </div>
+          </div>
+        )}
+
+        {/* OKRs */}
+        {tab === 3 && (
+          <div>
+            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>OKRs</h2>
+            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>Define your three objectives, key results, and driving initiatives.</p>
+            {s.okrs.map((okr,oi) => (
+              <div key={oi} style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:14,padding:24,marginBottom:20}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
+                  <div style={{width:24,height:24,borderRadius:"50%",background:"#2563eb",color:"#fff",fontSize:12,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{oi+1}</div>
+                  <span style={{fontWeight:700,fontSize:15,color:"#111"}}>Objective {oi+1}</span>
+                </div>
+                <div style={{marginBottom:20}}>
+                  <label style={lStyle}>Objective Statement</label>
+                  <input style={iStyle} placeholder={`Enter your Objective ${oi+1} statement...`} value={okr.objective} onChange={e=>set(`okrs.${oi}.objective`,e.target.value)}/>
+                </div>
+                <div style={{marginBottom:20,background:"#f0f4ff",borderRadius:10,padding:16}}>
+                  <label style={{...lStyle,color:"#3b5bdb"}}>Key Results</label>
+                  {okr.krs.map((kr,ki)=>(
+                    <div key={ki} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:10,marginBottom:8}}>
+                      <input style={iStyle} placeholder={`Key Result ${ki+1}`} value={kr.l} onChange={e=>set(`okrs.${oi}.krs.${ki}.l`,e.target.value)}/>
+                      <input style={iStyle} placeholder="From" value={kr.from} onChange={e=>set(`okrs.${oi}.krs.${ki}.from`,e.target.value)}/>
+                      <input style={iStyle} placeholder="To" value={kr.to} onChange={e=>set(`okrs.${oi}.krs.${ki}.to`,e.target.value)}/>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <label style={lStyle}>Initiatives</label>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                    <input style={iStyle} placeholder="Initiative #1" value={okr.inits[0].t} onChange={e=>set(`okrs.${oi}.inits.0.t`,e.target.value)}/>
+                    <input style={iStyle} placeholder="Initiative #2" value={okr.inits[1].t} onChange={e=>set(`okrs.${oi}.inits.1.t`,e.target.value)}/>
+                    <input style={iStyle} placeholder="Initiative #3" value={okr.inits[2].t} onChange={e=>set(`okrs.${oi}.inits.2.t`,e.target.value)}/>
+                    <input style={iStyle} placeholder="Initiative #4" value={okr.inits[3].t} onChange={e=>set(`okrs.${oi}.inits.3.t`,e.target.value)}/>
+                    <input style={iStyle} placeholder="Initiative #5" value={okr.inits[4].t} onChange={e=>set(`okrs.${oi}.inits.4.t`,e.target.value)}/>
+                    <input style={iStyle} placeholder="Initiative #6" value={okr.inits[5].t} onChange={e=>set(`okrs.${oi}.inits.5.t`,e.target.value)}/>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* CORE VALUE EQUATION */}
+        {tab === 4 && (
+          <div>
+            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>Core Value Equation</h2>
+            <p style={{fontSize:13,color:"#6b7280",marginBottom:32}}>Define your current metrics, business machines, and target outcomes.</p>
+
+            {/* Header row */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 48px 1fr 48px 1fr",gap:12,marginBottom:10}}>
+              <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",textAlign:"center"}}>Current</div>
+              <div/>
+              <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",textAlign:"center"}}>Business Machines</div>
+              <div/>
+              <div style={{fontSize:11,fontWeight:700,color:"#2563eb",textTransform:"uppercase",letterSpacing:"0.05em",textAlign:"center"}}>Target</div>
+            </div>
+
+            <div style={{display:"flex",gap:12,alignItems:"stretch"}}>
+
+              {/* Current column */}
+              <div style={{flex:1,display:"flex",flexDirection:"column",gap:12}}>
+                {eqRows.map(({key,label})=>(
+                  <div key={key} style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:10,padding:"14px 16px",flex:1}}>
+                    <div style={{fontSize:11,fontWeight:600,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>{label}</div>
+                    <input style={{width:"100%",boxSizing:"border-box",border:"1px solid #e5e7eb",borderRadius:8,padding:"8px 12px",fontSize:14,outline:"none"}}
+                      placeholder="Enter value" value={s.equation.current[key]} onChange={e=>set(`equation.current.${key}`,e.target.value)}/>
+                  </div>
+                ))}
+              </div>
+
+              {/* Plus */}
+              <div style={{width:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:24,color:"#9ca3af",fontWeight:300}}>+</span>
+              </div>
+
+              {/* Machines column */}
+              <div style={{flex:1,display:"flex",flexDirection:"column",gap:12}}>
+                {eqRows.map(({machine})=>(
+                  <div key={machine} style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"14px 16px",flex:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <div style={{fontSize:14,fontWeight:600,color:"#1e40af"}}>{machine}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Equals */}
+              <div style={{width:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:24,color:"#9ca3af",fontWeight:300}}>=</span>
+              </div>
+
+              {/* Target column */}
+              <div style={{flex:1,display:"flex",flexDirection:"column",gap:12}}>
+                {eqRows.map(({key,label})=>(
+                  <div key={key} style={{background:"#fff",border:"1px solid #bfdbfe",borderRadius:10,padding:"14px 16px",flex:1}}>
+                    <div style={{fontSize:11,fontWeight:600,color:"#2563eb",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>{label}</div>
+                    <input style={{width:"100%",boxSizing:"border-box",border:"1px solid #e5e7eb",borderRadius:8,padding:"8px 12px",fontSize:14,outline:"none"}}
+                      placeholder="Enter target" value={s.equation.target[key]} onChange={e=>set(`equation.target.${key}`,e.target.value)}/>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
