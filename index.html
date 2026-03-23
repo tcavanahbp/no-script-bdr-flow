@@ -1,254 +1,838 @@
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The No Script SDR Workflow</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-const emptyInitiatives = () => [{t:""},{t:""},{t:""},{t:""},{t:""},{t:""}];
+:root {
+  --color-text:     #3F454A;
+  --color-accent:   #3979F9;
+  --color-chip-bg:  #CEDEFD;
+  --color-banner:   #B4C4E3;
+  --color-bg:       #FFFFFF;
+  --color-emphasis: #000000;
+  --color-row-alt:  #F5F7FF;
 
-const emptyOkr = (kr1, kr2) => ({
-  objective: "",
-  krs: [{l:kr1,from:"",to:""},{l:kr2,from:"",to:""},{l:"",from:"",to:""}],
-  inits: emptyInitiatives(),
-});
+  --font-heading: 'Montserrat', 'Arial Black', sans-serif;
+  --font-body:    'Lato', 'Arial', sans-serif;
 
-const S0 = {
-  theme: {title:"", desc:""},
-  reframe: {title:"", desc:""},
-  equation: {
-    current: {arr:"", arrv:"", arra:"", ebitda:""},
-    target:  {arr:"", arrv:"", arra:"", ebitda:""},
-  },
-  okrs: [
-    emptyOkr("Monthly Net New SaaS ARR","Monthly Gross New Locations"),
-    emptyOkr("Monthly New Upsell / Expansion ARR","Monthly Gross Retention"),
-    emptyOkr("Product Utilization","Launch Upsellable Products"),
-  ],
-};
+  --radius-chip: 999px;
+  --radius-card: 12px;
+  --shadow-card: 0 2px 12px rgba(63,69,74,0.10);
+}
 
-const TABS = ["Dashboard","Theme","Reframe","OKRs","Core Value Equation"];
+body {
+  font-family: var(--font-body);
+  background: #EEF0F4;
+  min-height: 100vh;
+  padding: 2rem 1rem 3rem;
+  color: var(--color-text);
+}
 
-const iStyle = {
-  display:"block", width:"100%", boxSizing:"border-box",
-  border:"1px solid #e5e7eb", borderRadius:8,
-  padding:"9px 12px", fontSize:13, outline:"none", background:"#fff",
-};
-const lStyle = {
-  display:"block", fontSize:11, fontWeight:600, color:"#6b7280",
-  textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6,
-};
-const box = (extra) => ({
-  borderRadius:10, padding:"14px 16px", marginBottom:10, ...extra
-});
+.page {
+  max-width: 920px;
+  margin: 0 auto;
+  background: var(--color-bg);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 40px rgba(63,69,74,0.13);
+  overflow: hidden;
+}
 
-export default function App() {
-  const [s, setS] = useState(S0);
-  const [tab, setTab] = useState(0);
+/* ── Header ── */
+header {
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-banner);
+  padding: 1rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-  const set = (path, val) => setS(prev => {
-    const next = JSON.parse(JSON.stringify(prev));
-    const keys = path.split(".");
-    let cur = next;
-    for (let i = 0; i < keys.length - 1; i++) cur = cur[keys[i]];
-    cur[keys[keys.length - 1]] = val;
-    return next;
-  });
+.wordmark {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
 
-  const eqRows = [
-    { key:"arr",   label:"ARR",    machine:"Product"     },
-    { key:"arrv",  label:"ARRv",   machine:"CX Machine"  },
-    { key:"arra",  label:"ARRa",   machine:"GTM Machine" },
-    { key:"ebitda",label:"EBITDA", machine:"Talent"      },
-  ];
+.header-meta {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text);
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+}
 
-  return (
-    <div style={{fontFamily:"Inter,sans-serif", minHeight:"100vh", background:"#f8f9fb"}}>
+/* ── Hero ── */
+.hero {
+  background: var(--color-text);
+  padding: 3rem 2.5rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
 
-      <div style={{background:"#fff", borderBottom:"1px solid #e5e7eb", padding:"18px 32px", display:"flex", alignItems:"center", gap:12}}>
-        <div style={{width:10,height:10,borderRadius:"50%",background:"#2563eb"}}/>
-        <span style={{fontWeight:700,fontSize:16,color:"#111"}}>blueprint</span>
-        <span style={{fontSize:13,color:"#9ca3af",marginLeft:4}}>/ Company Strategy Tracker</span>
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 35%;
+  background: repeating-linear-gradient(
+    -45deg, transparent, transparent 10px,
+    rgba(57,121,249,0.06) 10px, rgba(57,121,249,0.06) 11px
+  );
+  pointer-events: none;
+}
+
+.hero-chip {
+  display: inline-block;
+  background: var(--color-chip-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3em 0.9em;
+  border-radius: var(--radius-chip);
+  margin-bottom: 1.25rem;
+}
+
+.hero h1 {
+  font-family: var(--font-heading);
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.hero h1 span {
+  color: var(--color-accent);
+}
+
+.hero-sub {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  max-width: 540px;
+  line-height: 1.65;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding-top: 1rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Principle banner ── */
+.principle-banner {
+  background: var(--color-accent);
+  padding: 1rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.principle-label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  white-space: nowrap;
+}
+
+.principle-text {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #fff;
+  line-height: 1.4;
+}
+
+/* ── Body ── */
+.body {
+  padding: 2.5rem 2.5rem;
+}
+
+/* ── Alert box ── */
+.alert-box {
+  background: #FFFBF0;
+  border: 1px solid rgba(184,125,26,0.25);
+  border-left: 4px solid #B87D1A;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.alert-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.alert-chip {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #B87D1A;
+  color: #fff;
+  padding: 0.2em 0.75em;
+  border-radius: var(--radius-chip);
+}
+
+.alert-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: #7a5000;
+}
+
+.alert-body {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: #7a5800;
+  line-height: 1.65;
+}
+
+.alert-body strong { color: #5a3d00; font-weight: 700; }
+
+.alert-signals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.alert-signal {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: #7a5800;
+  background: rgba(255,255,255,0.6);
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.signal-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #B87D1A; flex-shrink: 0; margin-top: 4px;
+}
+
+/* ── Section label ── */
+.section-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-chip {
+  display: inline-block;
+  background: var(--color-chip-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3em 0.9em;
+  border-radius: var(--radius-chip);
+  white-space: nowrap;
+}
+
+.section-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--color-banner);
+  opacity: 0.5;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--color-row-alt);
+  border-radius: 8px;
+  border: 1px solid var(--color-banner);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text);
+}
+
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Flow ── */
+.flow { display: flex; flex-direction: column; margin-bottom: 2.5rem; }
+
+.stage { display: grid; grid-template-columns: 40px 1fr; gap: 0 1rem; }
+
+.stage-spine { display: flex; flex-direction: column; align-items: center; }
+
+.stage-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading); font-size: 0.9rem; font-weight: 700;
+  flex-shrink: 0; position: relative; z-index: 1;
+  color: #fff;
+}
+
+.stage-line { width: 2px; flex: 1; min-height: 20px; }
+.stage-body { padding-bottom: 1.75rem; }
+
+.stage-card {
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(63,69,74,0.1);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.stage-card-head { padding: 1rem 1.25rem 0.75rem; }
+
+.stage-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.2rem;
+}
+
+.stage-intent {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text);
+  opacity: 0.6;
+}
+
+.stage-card-body { padding: 1.125rem 1.25rem; background: var(--color-bg); }
+
+.stage-desc {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  opacity: 0.75;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+
+/* Stage color variants — num + line + head bg */
+.stage-open  .stage-num { background: var(--color-text); }
+.stage-open  .stage-line { background: var(--color-banner); }
+.stage-open  .stage-card-head { background: #F0F2F4; border-bottom: 1px solid rgba(63,69,74,0.08); }
+
+.stage-pain  .stage-num { background: #C8472A; }
+.stage-pain  .stage-line { background: rgba(200,71,42,0.2); }
+.stage-pain  .stage-card-head { background: #FDF0EE; border-bottom: 1px solid rgba(200,71,42,0.12); }
+
+.stage-qualify .stage-num { background: var(--color-accent); }
+.stage-qualify .stage-line { background: rgba(57,121,249,0.2); }
+.stage-qualify .stage-card-head { background: #EEF3FF; border-bottom: 1px solid rgba(57,121,249,0.12); }
+
+.stage-deepen .stage-num { background: #5A3A8A; }
+.stage-deepen .stage-line { background: rgba(90,58,138,0.2); }
+.stage-deepen .stage-card-head { background: #F2EEFA; border-bottom: 1px solid rgba(90,58,138,0.1); }
+
+.stage-close .stage-num { background: #1a7a4a; }
+.stage-close .stage-line { background: rgba(26,122,74,0.2); }
+.stage-close .stage-card-head { background: #EAF6F1; border-bottom: 1px solid rgba(26,122,74,0.12); }
+
+.stage-dq .stage-num { background: #888E93; }
+.stage-dq .stage-line { background: transparent; }
+.stage-dq .stage-card-head { background: #F4F5F6; border-bottom: 1px solid rgba(63,69,74,0.08); }
+
+/* ── Q items ── */
+.q-section { margin-bottom: 0.875rem; }
+
+.q-section-label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+  opacity: 0.5;
+}
+
+.q-list { display: flex; flex-direction: column; gap: 6px; }
+
+.q-item {
+  display: flex; gap: 0.75rem; align-items: flex-start;
+  padding: 0.6rem 0.875rem; border-radius: 6px;
+  font-family: var(--font-body); font-size: 0.85rem; line-height: 1.55;
+  color: var(--color-text);
+}
+
+.q-item.pain-q   { background: #FDF0EE; border-left: 3px solid #C8472A; }
+.q-item.qual-q   { background: #EEF3FF; border-left: 3px solid var(--color-accent); }
+.q-item.deep-q   { background: #F2EEFA; border-left: 3px solid #5A3A8A; }
+.q-item.close-q  { background: #EAF6F1; border-left: 3px solid #1a7a4a; }
+.q-item.dq-q     { background: #F4F5F6; border-left: 3px solid #888E93; }
+
+.q-tag {
+  font-family: var(--font-body);
+  font-size: 0.65rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 0.2em 0.6em; border-radius: var(--radius-chip);
+  white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+  color: #fff;
+}
+
+.q-tag.pain  { background: #C8472A; }
+.q-tag.qual  { background: var(--color-accent); }
+.q-tag.deep  { background: #5A3A8A; }
+.q-tag.close { background: #1a7a4a; }
+.q-tag.dq    { background: #888E93; }
+
+/* ── Coach callout ── */
+.coach {
+  background: var(--color-text);
+  color: #fff;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.coach-label {
+  font-family: var(--font-body);
+  font-size: 0.65rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--color-accent);
+  white-space: nowrap;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.coach-text {
+  font-family: var(--font-body);
+  font-size: 0.825rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+}
+
+.coach-text strong { color: #fff; font-weight: 700; }
+
+/* ── Pill strip ── */
+.pill-strip { display: flex; gap: 6px; margin-top: 0.75rem; flex-wrap: wrap; }
+
+.pill {
+  font-family: var(--font-body);
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.25em 0.875em;
+  border-radius: var(--radius-chip);
+  border: 1.5px solid var(--color-banner);
+  background: var(--color-chip-bg);
+  color: var(--color-text);
+}
+
+/* ── Booking rules ── */
+.booking-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1rem; }
+
+.booking-rule { border-radius: 8px; padding: 1rem 1.125rem; }
+.booking-rule.target { background: #EAF6F1; border: 1px solid rgba(26,122,74,0.2); }
+.booking-rule.max    { background: #FFFBF0; border: 1px solid rgba(184,125,26,0.2); }
+
+.booking-rule-label {
+  font-family: var(--font-body);
+  font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;
+}
+.booking-rule.target .booking-rule-label { color: #1a7a4a; }
+.booking-rule.max    .booking-rule-label { color: #B87D1A; }
+
+.booking-rule-val {
+  font-family: var(--font-heading);
+  font-size: 1.75rem; font-weight: 700; margin-bottom: 4px;
+}
+.booking-rule.target .booking-rule-val { color: #1a7a4a; }
+.booking-rule.max    .booking-rule-val { color: #B87D1A; }
+
+.booking-rule-desc {
+  font-family: var(--font-body);
+  font-size: 0.78rem; color: var(--color-text); opacity: 0.65; line-height: 1.45;
+}
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--color-banner); opacity: 0.4; margin: 2rem 0; }
+
+/* ── Do/Don't grid ── */
+.dos-donts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+
+.dd-card {
+  background: var(--color-bg);
+  border: 1px solid rgba(63,69,74,0.1);
+  border-radius: var(--radius-card);
+  padding: 1.125rem 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.dd-header {
+  font-family: var(--font-body);
+  font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;
+}
+
+.dd-header.do   { color: #1a7a4a; }
+.dd-header.dont { color: #C8472A; }
+
+.dd-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-family: var(--font-body); font-size: 0.85rem;
+  color: var(--color-text); line-height: 1.5; margin-bottom: 7px;
+}
+
+.dd-icon { font-weight: 700; flex-shrink: 0; }
+.dd-icon.plus  { color: #1a7a4a; }
+.dd-icon.minus { color: #C8472A; }
+
+/* ── Footer ── */
+footer {
+  padding: 1rem 2.5rem;
+  border-top: 2px solid var(--color-banner);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer-wordmark {
+  font-family: var(--font-heading);
+  font-size: 1rem; font-weight: 700;
+  color: var(--color-text);
+}
+
+.footer-meta {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--color-text);
+  opacity: 0.45;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 640px) {
+  .hero, .body { padding-left: 1.5rem; padding-right: 1.5rem; }
+  header, .principle-banner, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .hero h1 { font-size: 2rem; }
+  .booking-rules, .alert-signals, .dos-donts { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <header>
+    <span class="wordmark">blueprint</span>
+    <span class="header-meta">Confidential · Sales Development Playbook</span>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-chip">Sales Development Playbook</div>
+    <h1>The No Script<br><span>SDR Workflow</span></h1>
+    <p class="hero-sub">A conversation flow for SDRs who open accounts — not pitch them. The goal is never to sell the product. The goal is to make the prospect curious enough to ask for the next conversation.</p>
+  </div>
+
+  <!-- Principle Banner -->
+  <div class="principle-banner">
+    <span class="principle-label">Core Principle</span>
+    <span class="principle-text">"You are not here to sell. You are here to open. Curiosity is your only weapon — and your prospect's too."</span>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Month 3 Slump Alert -->
+    <div class="alert-box">
+      <div class="alert-head">
+        <span class="alert-chip">Leader Alert</span>
+        <span class="alert-title">The Month 3 Slump</span>
       </div>
-
-      <div style={{background:"#fff", borderBottom:"1px solid #e5e7eb", padding:"0 32px", display:"flex"}}>
-        {TABS.map((t,i) => (
-          <button key={t} onClick={()=>setTab(i)} style={{
-            padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer",
-            fontWeight:tab===i?600:400, color:tab===i?"#2563eb":"#6b7280",
-            borderBottom:tab===i?"2px solid #2563eb":"2px solid transparent",
-          }}>{t}</button>
-        ))}
-      </div>
-
-      <div style={{maxWidth:920, margin:"0 auto", padding:"36px 24px"}}>
-
-        {/* DASHBOARD */}
-        {tab === 0 && (
-          <div>
-            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>Strategy Dashboard</h2>
-            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>A summary of your company strategy at a glance.</p>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-              <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:12,padding:16}}>
-                <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10}}>Annual Theme</div>
-                <p style={{fontSize:15,fontWeight:600,color:s.theme.title?"#111":"#d1d5db",marginBottom:4}}>{s.theme.title||"No theme set"}</p>
-                <p style={{fontSize:13,color:"#6b7280"}}>{s.theme.desc}</p>
-              </div>
-              <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:12,padding:16}}>
-                <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10}}>The Reframe</div>
-                <p style={{fontSize:15,fontWeight:600,color:s.reframe.title?"#111":"#d1d5db",marginBottom:4}}>{s.reframe.title||"No reframe set"}</p>
-                <p style={{fontSize:13,color:"#6b7280"}}>{s.reframe.desc}</p>
-              </div>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
-              {s.okrs.map((okr,i) => (
-                <div key={i} style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:12,padding:16}}>
-                  <div style={{fontSize:11,fontWeight:700,color:"#2563eb",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8}}>Objective {i+1}</div>
-                  <p style={{fontSize:12,fontWeight:600,color:okr.objective?"#374151":"#d1d5db",marginBottom:8}}>{okr.objective||"No objective set"}</p>
-                  {okr.krs.filter(kr=>kr.l).map((kr,ki)=>(
-                    <div key={ki} style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#6b7280",marginBottom:4,borderBottom:"1px solid #f3f4f6",paddingBottom:4}}>
-                      <span>{kr.l}</span>
-                      {(kr.from||kr.to)&&<span style={{color:"#2563eb",fontWeight:600}}>{kr.from} → {kr.to}</span>}
-                    </div>
-                  ))}
-                  <div style={{marginTop:8}}>
-                    {okr.inits.filter(x=>x.t).map((x,ii)=>(
-                      <div key={ii} style={{background:"#f8f9fb",borderRadius:8,padding:"6px 10px",marginBottom:4,fontSize:11,color:"#374151"}}>● {x.t}</div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* THEME */}
-        {tab === 1 && (
-          <div>
-            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>Annual Theme</h2>
-            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>The single overarching idea guiding your company this year.</p>
-            <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:14,padding:24}}>
-              <label style={lStyle}>Theme Title</label>
-              <input style={{...iStyle,marginBottom:16}} placeholder="e.g. The Year We Scale" value={s.theme.title} onChange={e=>set("theme.title",e.target.value)}/>
-              <label style={lStyle}>Theme Description</label>
-              <textarea style={{...iStyle,minHeight:100,resize:"vertical"}} placeholder="Describe the idea guiding the company's decisions, priorities, and energy this year." value={s.theme.desc} onChange={e=>set("theme.desc",e.target.value)}/>
-            </div>
-          </div>
-        )}
-
-        {/* REFRAME */}
-        {tab === 2 && (
-          <div>
-            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>The Reframe</h2>
-            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>Shift from old thinking to a more powerful framing.</p>
-            <div style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:14,padding:24}}>
-              <label style={lStyle}>Reframe Title</label>
-              <input style={{...iStyle,marginBottom:16}} placeholder="e.g. From a product company to a platform company" value={s.reframe.title} onChange={e=>set("reframe.title",e.target.value)}/>
-              <label style={lStyle}>Reframe Description</label>
-              <textarea style={{...iStyle,minHeight:100,resize:"vertical"}} placeholder="Describe the shift in thinking that will inspire action and align your team." value={s.reframe.desc} onChange={e=>set("reframe.desc",e.target.value)}/>
-            </div>
-          </div>
-        )}
-
-        {/* OKRs */}
-        {tab === 3 && (
-          <div>
-            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>OKRs</h2>
-            <p style={{fontSize:13,color:"#6b7280",marginBottom:24}}>Define your three objectives, key results, and driving initiatives.</p>
-            {s.okrs.map((okr,oi) => (
-              <div key={oi} style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:14,padding:24,marginBottom:20}}>
-                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-                  <div style={{width:24,height:24,borderRadius:"50%",background:"#2563eb",color:"#fff",fontSize:12,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{oi+1}</div>
-                  <span style={{fontWeight:700,fontSize:15,color:"#111"}}>Objective {oi+1}</span>
-                </div>
-                <div style={{marginBottom:20}}>
-                  <label style={lStyle}>Objective Statement</label>
-                  <input style={iStyle} placeholder={`Enter your Objective ${oi+1} statement...`} value={okr.objective} onChange={e=>set(`okrs.${oi}.objective`,e.target.value)}/>
-                </div>
-                <div style={{marginBottom:20,background:"#f0f4ff",borderRadius:10,padding:16}}>
-                  <label style={{...lStyle,color:"#3b5bdb"}}>Key Results</label>
-                  {okr.krs.map((kr,ki)=>(
-                    <div key={ki} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:10,marginBottom:8}}>
-                      <input style={iStyle} placeholder={`Key Result ${ki+1}`} value={kr.l} onChange={e=>set(`okrs.${oi}.krs.${ki}.l`,e.target.value)}/>
-                      <input style={iStyle} placeholder="From" value={kr.from} onChange={e=>set(`okrs.${oi}.krs.${ki}.from`,e.target.value)}/>
-                      <input style={iStyle} placeholder="To" value={kr.to} onChange={e=>set(`okrs.${oi}.krs.${ki}.to`,e.target.value)}/>
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <label style={lStyle}>Initiatives</label>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                    <input style={iStyle} placeholder="Initiative #1" value={okr.inits[0].t} onChange={e=>set(`okrs.${oi}.inits.0.t`,e.target.value)}/>
-                    <input style={iStyle} placeholder="Initiative #2" value={okr.inits[1].t} onChange={e=>set(`okrs.${oi}.inits.1.t`,e.target.value)}/>
-                    <input style={iStyle} placeholder="Initiative #3" value={okr.inits[2].t} onChange={e=>set(`okrs.${oi}.inits.2.t`,e.target.value)}/>
-                    <input style={iStyle} placeholder="Initiative #4" value={okr.inits[3].t} onChange={e=>set(`okrs.${oi}.inits.3.t`,e.target.value)}/>
-                    <input style={iStyle} placeholder="Initiative #5" value={okr.inits[4].t} onChange={e=>set(`okrs.${oi}.inits.4.t`,e.target.value)}/>
-                    <input style={iStyle} placeholder="Initiative #6" value={okr.inits[5].t} onChange={e=>set(`okrs.${oi}.inits.5.t`,e.target.value)}/>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* CORE VALUE EQUATION */}
-        {tab === 4 && (
-          <div>
-            <h2 style={{fontSize:20,fontWeight:700,color:"#111",marginBottom:4}}>Core Value Equation</h2>
-            <p style={{fontSize:13,color:"#6b7280",marginBottom:32}}>Define your current metrics, business machines, and target outcomes.</p>
-
-            {/* Header row */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 48px 1fr 48px 1fr",gap:12,marginBottom:10}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",textAlign:"center"}}>Current</div>
-              <div/>
-              <div style={{fontSize:11,fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",textAlign:"center"}}>Business Machines</div>
-              <div/>
-              <div style={{fontSize:11,fontWeight:700,color:"#2563eb",textTransform:"uppercase",letterSpacing:"0.05em",textAlign:"center"}}>Target</div>
-            </div>
-
-            <div style={{display:"flex",gap:12,alignItems:"stretch"}}>
-
-              {/* Current column */}
-              <div style={{flex:1,display:"flex",flexDirection:"column",gap:12}}>
-                {eqRows.map(({key,label})=>(
-                  <div key={key} style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:10,padding:"14px 16px",flex:1}}>
-                    <div style={{fontSize:11,fontWeight:600,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>{label}</div>
-                    <input style={{width:"100%",boxSizing:"border-box",border:"1px solid #e5e7eb",borderRadius:8,padding:"8px 12px",fontSize:14,outline:"none"}}
-                      placeholder="Enter value" value={s.equation.current[key]} onChange={e=>set(`equation.current.${key}`,e.target.value)}/>
-                  </div>
-                ))}
-              </div>
-
-              {/* Plus */}
-              <div style={{width:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{fontSize:24,color:"#9ca3af",fontWeight:300}}>+</span>
-              </div>
-
-              {/* Machines column */}
-              <div style={{flex:1,display:"flex",flexDirection:"column",gap:12}}>
-                {eqRows.map(({machine})=>(
-                  <div key={machine} style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"14px 16px",flex:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    <div style={{fontSize:14,fontWeight:600,color:"#1e40af"}}>{machine}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Equals */}
-              <div style={{width:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{fontSize:24,color:"#9ca3af",fontWeight:300}}>=</span>
-              </div>
-
-              {/* Target column */}
-              <div style={{flex:1,display:"flex",flexDirection:"column",gap:12}}>
-                {eqRows.map(({key,label})=>(
-                  <div key={key} style={{background:"#fff",border:"1px solid #bfdbfe",borderRadius:10,padding:"14px 16px",flex:1}}>
-                    <div style={{fontSize:11,fontWeight:600,color:"#2563eb",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>{label}</div>
-                    <input style={{width:"100%",boxSizing:"border-box",border:"1px solid #e5e7eb",borderRadius:8,padding:"8px 12px",fontSize:14,outline:"none"}}
-                      placeholder="Enter target" value={s.equation.target[key]} onChange={e=>set(`equation.target.${key}`,e.target.value)}/>
-                  </div>
-                ))}
-              </div>
-
-            </div>
-          </div>
-        )}
-
+      <p class="alert-body">Around month three, SDRs learn enough about the product and the prospect that they stop asking questions — and start telling. They shift from <strong>curious explorer</strong> to <strong>mini AE</strong>, pitching features and pushing for demos before the prospect has felt any pain. Conversion rates drop. Watch for it. Coach against it relentlessly.</p>
+      <div class="alert-signals">
+        <div class="alert-signal"><div class="signal-dot"></div><span>SDR leads with product benefits before asking about pain</span></div>
+        <div class="alert-signal"><div class="signal-dot"></div><span>Calls get longer but booking rates fall</span></div>
+        <div class="alert-signal"><div class="signal-dot"></div><span>SDR answers prospect objections with feature explanations</span></div>
+        <div class="alert-signal"><div class="signal-dot"></div><span>Questions disappear from call recordings — statements take over</span></div>
       </div>
     </div>
-  );
-}
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#C8472A"></div>Pain question</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3979F9"></div>Qualifying question</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5A3A8A"></div>Deepening question</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>Assumptive close</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#888E93"></div>Disqualify &amp; move</div>
+    </div>
+
+    <!-- Section label -->
+    <div class="section-label-row">
+      <span class="section-chip">Conversation Flow</span>
+      <span class="section-rule"></span>
+    </div>
+
+    <!-- Flow -->
+    <div class="flow">
+
+      <!-- Stage 1 -->
+      <div class="stage stage-open">
+        <div class="stage-spine">
+          <div class="stage-num">1</div>
+          <div class="stage-line"></div>
+        </div>
+        <div class="stage-body">
+          <div class="stage-card">
+            <div class="stage-card-head">
+              <div class="stage-title">The Open</div>
+              <div class="stage-intent">Goal: earn 60 seconds of attention</div>
+            </div>
+            <div class="stage-card-body">
+              <p class="stage-desc">You have one job here: don't get hung up on. Lead with a reason that is relevant to <em>them</em> — a trigger event, a piece of industry news, something you noticed about their business. Never open with your company name and what you do. Make it about them in the first sentence.</p>
+              <div class="pill-strip">
+                <span class="pill">Trigger-led open</span>
+                <span class="pill">Relevance first</span>
+                <span class="pill">No product mention</span>
+              </div>
+              <div class="q-section" style="margin-top:1rem">
+                <div class="q-list">
+                  <div class="q-item pain-q"><span class="q-tag pain">Open</span>"I noticed [company] just [trigger event] — that usually creates some interesting pressure around [relevant area]. Is that showing up for your team at all?"</div>
+                  <div class="q-item pain-q"><span class="q-tag pain">Open</span>"I've been talking to a lot of [role] in [industry] lately and the same challenge keeps coming up — [pain theme]. Are you running into anything like that?"</div>
+                </div>
+              </div>
+              <div class="coach">
+                <span class="coach-label">Coach</span>
+                <span class="coach-text"><strong>Do not mention your product in the open.</strong> The moment you say "we help companies like yours with X," you've given them something to say no to. The open should feel like a curious peer — not a vendor.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 2 -->
+      <div class="stage stage-pain">
+        <div class="stage-spine">
+          <div class="stage-num">2</div>
+          <div class="stage-line"></div>
+        </div>
+        <div class="stage-body">
+          <div class="stage-card">
+            <div class="stage-card-head">
+              <div class="stage-title">Surface the Pain</div>
+              <div class="stage-intent">Goal: get the prospect thinking about a problem they own</div>
+            </div>
+            <div class="stage-card-body">
+              <p class="stage-desc">Ask questions that make the prospect think — not about your solution, but about their situation. The SDR needs deep industry knowledge to ask questions that feel perceptive. Shallow questions get shallow answers. Great pain questions make a prospect pause.</p>
+              <div class="q-section">
+                <div class="q-section-label">Pain questions — surface the problem</div>
+                <div class="q-list">
+                  <div class="q-item pain-q"><span class="q-tag pain">Pain</span>"When [common industry challenge] happens, what does that typically cost your team in time or output?"</div>
+                  <div class="q-item pain-q"><span class="q-tag pain">Pain</span>"How are you currently handling [problem area]? What's working well — and what's not?"</div>
+                  <div class="q-item pain-q"><span class="q-tag pain">Pain</span>"If you could fix one thing about [process] tomorrow, what would it be?"</div>
+                  <div class="q-item qual-q"><span class="q-tag qual">Qualify</span>"Is this something that's on your radar to address this year, or more of a longer-term thing?"</div>
+                </div>
+              </div>
+              <div class="coach">
+                <span class="coach-label">Coach</span>
+                <span class="coach-text"><strong>When a prospect mentions a pain — go deeper, don't pivot to your solution.</strong> Say "tell me more about that" instead. The longer they talk about the pain, the more they own it.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 3 -->
+      <div class="stage stage-qualify">
+        <div class="stage-spine">
+          <div class="stage-num">3</div>
+          <div class="stage-line"></div>
+        </div>
+        <div class="stage-body">
+          <div class="stage-card">
+            <div class="stage-card-head">
+              <div class="stage-title">Qualify — or Move On</div>
+              <div class="stage-intent">Goal: confirm fit quickly without slowing momentum</div>
+            </div>
+            <div class="stage-card-body">
+              <p class="stage-desc">Weave qualifying questions into the pain conversation — never fire them in a block. A disqualifying signal is a gift: it lets you move on efficiently and protect your pipeline. A good SDR is as proud of a clean DQ as a booked meeting.</p>
+              <div class="q-section">
+                <div class="q-section-label">Qualifying questions — woven naturally into the conversation</div>
+                <div class="q-list">
+                  <div class="q-item qual-q"><span class="q-tag qual">Qualify</span>"How big is the team that would be affected by this?"</div>
+                  <div class="q-item qual-q"><span class="q-tag qual">Qualify</span>"Who else would typically be involved in a decision like this?"</div>
+                  <div class="q-item qual-q"><span class="q-tag qual">Qualify</span>"Are you the right person to be exploring this with, or would it make more sense to loop someone else in?"</div>
+                  <div class="q-item qual-q"><span class="q-tag qual">Qualify</span>"Do you have a current solution for this, or is it a gap you're living with right now?"</div>
+                  <div class="q-item dq-q"><span class="q-tag dq">DQ Signal</span>If: no budget intent, no timeline, wrong decision-maker, and no pain — exit gracefully and move on.</div>
+                </div>
+              </div>
+              <div class="coach">
+                <span class="coach-label">Coach</span>
+                <span class="coach-text"><strong>Qualifying is not interrogating.</strong> It should feel like natural curiosity. If an SDR is firing BANT questions in sequence, they've turned the call into an interview. Qualifying questions should follow the prospect's answers — not a checklist.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 4 -->
+      <div class="stage stage-deepen">
+        <div class="stage-spine">
+          <div class="stage-num">4</div>
+          <div class="stage-line"></div>
+        </div>
+        <div class="stage-body">
+          <div class="stage-card">
+            <div class="stage-card-head">
+              <div class="stage-title">Deepen the Pain</div>
+              <div class="stage-intent">Goal: make the problem feel urgent — without offering a solution</div>
+            </div>
+            <div class="stage-card-body">
+              <p class="stage-desc">This is the hardest stage to master and the one most SDRs skip. Once pain is confirmed, the instinct is to pitch. Resist it. Help the prospect feel the full weight of the problem — the cost, the frequency, the downstream impact. Only when they feel the pain strongly will they ask for help.</p>
+              <div class="q-section">
+                <div class="q-section-label">Deepening questions — amplify the pain without solving it</div>
+                <div class="q-list">
+                  <div class="q-item deep-q"><span class="q-tag deep">Deepen</span>"How long has this been going on? Has it gotten better or worse over the last year?"</div>
+                  <div class="q-item deep-q"><span class="q-tag deep">Deepen</span>"What happens downstream when [pain] occurs — who else does it affect?"</div>
+                  <div class="q-item deep-q"><span class="q-tag deep">Deepen</span>"If nothing changes in the next 12 months, what does that look like for you?"</div>
+                  <div class="q-item deep-q"><span class="q-tag deep">Deepen</span>"Have you tried to solve this before? What happened?"</div>
+                  <div class="q-item pain-q"><span class="q-tag pain">Pain</span>"What would it mean for you personally if this got solved?"</div>
+                </div>
+              </div>
+              <div class="coach">
+                <span class="coach-label">Coach</span>
+                <span class="coach-text"><strong>The SDR's job is to hold the prospect in the pain — not rescue them from it.</strong> When a prospect says "yeah, it's a real problem," the right response is "how bad does it get?" Keep them there until they want out.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 5 -->
+      <div class="stage stage-close">
+        <div class="stage-spine">
+          <div class="stage-num">5</div>
+          <div class="stage-line"></div>
+        </div>
+        <div class="stage-body">
+          <div class="stage-card">
+            <div class="stage-card-head">
+              <div class="stage-title">The Assumptive Close</div>
+              <div class="stage-intent">Goal: book the meeting as if yes is already the answer</div>
+            </div>
+            <div class="stage-card-body">
+              <p class="stage-desc">When the prospect has acknowledged real pain and seems ready to explore, do not ask "would you be open to a call?" — that invites a no. Assume the yes. Present the next step as a logical, expected move. Control the booking: offer specific times, own the scheduling, and target the next call in under 3 days.</p>
+              <div class="q-section">
+                <div class="q-section-label">Assumptive close lines</div>
+                <div class="q-list">
+                  <div class="q-item close-q"><span class="q-tag close">Close</span>"Based on what you've described, it sounds like a conversation with one of our solution experts would be worth 20 minutes. I can get something on the calendar for Thursday — does morning or afternoon work better?"</div>
+                  <div class="q-item close-q"><span class="q-tag close">Close</span>"I'd love to connect you with someone who works on this specific challenge all day — are you free Wednesday or Thursday this week?"</div>
+                  <div class="q-item close-q"><span class="q-tag close">Close</span>"The person I'd want to connect you with has seen this exact problem at companies like yours. I can get you on their calendar before the end of the week — what does Thursday look like?"</div>
+                </div>
+              </div>
+              <div class="booking-rules">
+                <div class="booking-rule target">
+                  <div class="booking-rule-label">Target</div>
+                  <div class="booking-rule-val">≤ 3 days</div>
+                  <div class="booking-rule-desc">Ideal time to next call. Prospect's pain is still fresh. Urgency is real.</div>
+                </div>
+                <div class="booking-rule max">
+                  <div class="booking-rule-label">Maximum</div>
+                  <div class="booking-rule-val">7 days</div>
+                  <div class="booking-rule-desc">Do not let a booking slide past one week. Anything beyond 7 days is a probable no-show.</div>
+                </div>
+              </div>
+              <div class="coach" style="margin-top:1rem">
+                <span class="coach-label">Coach</span>
+                <span class="coach-text"><strong>The SDR owns the booking discussion — not the prospect.</strong> Never say "send me some times that work." Offer two specific windows, confirm the time zone, and send the invite before ending the call.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 6 -->
+      <div class="stage stage-dq">
+        <div class="stage-spine">
+          <div class="stage-num">6</div>
+          <div class="stage-line"></div>
+        </div>
+        <div class="stage-body">
+          <div class="stage-card">
+            <div class="stage-card-head">
+              <div class="stage-title">Graceful Disqualification</div>
+              <div class="stage-intent">Goal: exit cleanly, preserve the relationship, protect pipeline quality</div>
+            </div>
+            <div class="stage-card-body">
+              <p class="stage-desc">Not every prospect is a fit. A clean DQ protects the AE's time, keeps pipeline quality high, and keeps a door open for the future. Don't drag out calls that aren't going anywhere — and never let a prospect stay in the pipeline out of hope.</p>
+              <div class="q-section">
+                <div class="q-list">
+                  <div class="q-item dq-q"><span class="q-tag dq">DQ Exit</span>"It sounds like the timing might not be right — I don't want to waste your time. Can I check back in [quarter]?"</div>
+                  <div class="q-item dq-q"><span class="q-tag dq">DQ Exit</span>"Based on what you've shared, it doesn't sound like we'd be the right fit right now — I appreciate your honesty. I'll make a note to reconnect when [condition] changes."</div>
+                  <div class="q-item dq-q"><span class="q-tag dq">DQ Exit</span>"It sounds like [decision-maker name] would be a better starting point — would you be open to making an intro, or should I reach out directly?"</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Curiosity framework -->
+    <div class="section-label-row">
+      <span class="section-chip">The Curiosity Framework</span>
+      <span class="section-rule"></span>
+    </div>
+
+    <div class="dos-donts">
+      <div class="dd-card">
+        <div class="dd-header do">Do This</div>
+        <div class="dd-item"><span class="dd-icon plus">+</span>Ask one question at a time</div>
+        <div class="dd-item"><span class="dd-icon plus">+</span>Stay silent after asking — let them think</div>
+        <div class="dd-item"><span class="dd-icon plus">+</span>Follow the prospect's answer, not your script</div>
+        <div class="dd-item"><span class="dd-icon plus">+</span>Ask "tell me more about that" liberally</div>
+        <div class="dd-item"><span class="dd-icon plus">+</span>Know the industry well enough to ask perceptive questions</div>
+      </div>
+      <div class="dd-card">
+        <div class="dd-header dont">Never Do This</div>
+        <div class="dd-item"><span class="dd-icon minus">–</span>Answer your own question</div>
+        <div class="dd-item"><span class="dd-icon minus">–</span>Pivot to your product when you hear pain</div>
+        <div class="dd-item"><span class="dd-icon minus">–</span>Stack multiple questions in one breath</div>
+        <div class="dd-item"><span class="dd-icon minus">–</span>Rescue the prospect from their pain too quickly</div>
+        <div class="dd-item"><span class="dd-icon minus">–</span>Let the prospect control the next-step timeline</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <span class="footer-wordmark">blueprint</span>
+    <span class="footer-meta">Sales Development Playbook · Open the account. Drive the curiosity. Book the call.</span>
+  </footer>
+
+</div>
+</body>
+</html>
