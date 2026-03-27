@@ -60,12 +60,51 @@ header {
   letter-spacing: -0.01em;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .header-meta {
   font-family: var(--font-body);
   font-size: 0.75rem;
   color: var(--color-text);
   opacity: 0.5;
   letter-spacing: 0.04em;
+}
+
+/* ── Download button ── */
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: var(--color-chip-bg);
+  border: 1.5px solid var(--color-accent);
+  border-radius: var(--radius-chip);
+  padding: 0.35em 1em;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.download-btn:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.download-btn svg {
+  flex-shrink: 0;
+  transition: stroke 0.15s;
+}
+
+.download-btn:hover svg {
+  stroke: #fff;
 }
 
 /* ── Hero ── */
@@ -331,7 +370,7 @@ header {
   margin-bottom: 1rem;
 }
 
-/* Stage color variants — num + line + head bg */
+/* Stage color variants */
 .stage-open  .stage-num { background: var(--color-text); }
 .stage-open  .stage-line { background: var(--color-banner); }
 .stage-open  .stage-card-head { background: #F0F2F4; border-bottom: 1px solid rgba(63,69,74,0.08); }
@@ -534,6 +573,7 @@ footer {
   header, .principle-banner, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
   .hero h1 { font-size: 2rem; }
   .booking-rules, .alert-signals, .dos-donts { grid-template-columns: 1fr; }
+  .header-meta { display: none; }
 }
 </style>
 </head>
@@ -543,7 +583,15 @@ footer {
   <!-- Header -->
   <header>
     <span class="wordmark">blueprint</span>
-    <span class="header-meta">Confidential · Sales Development Playbook</span>
+    <div class="header-right">
+      <span class="header-meta">Confidential · Sales Development Playbook</span>
+      <button class="download-btn" onclick="downloadMarkdown()">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#3979F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6.5 1v7M3.5 5.5l3 3 3-3M1.5 10h10"/>
+        </svg>
+        Download .md
+      </button>
+    </div>
   </header>
 
   <!-- Hero -->
@@ -834,5 +882,176 @@ footer {
   </footer>
 
 </div>
+
+<script>
+const MD_CONTENT = `---
+title: "The No Script SDR Workflow"
+type: sales-development-playbook
+version: 1.0
+last_updated: 2026-03-27
+---
+
+# The No Script SDR Workflow
+
+> **How to use this:** This is a conversation flow for SDRs who open accounts — not pitch them. Work through each stage in sequence on every call. The goal is never to sell the product. The goal is to make the prospect curious enough to ask for the next conversation.
+
+**Core Principle:** *"You are not here to sell. You are here to open. Curiosity is your only weapon — and your prospect's too."*
+
+---
+
+## ⚠️ Leader Alert: The Month 3 Slump
+
+Around month three, SDRs learn enough about the product and the prospect that they stop asking questions — and start telling. They shift from **curious explorer** to **mini AE**, pitching features and pushing for demos before the prospect has felt any pain. Conversion rates drop. Watch for it. Coach against it relentlessly.
+
+**Warning signs:**
+- SDR leads with product benefits before asking about pain
+- Calls get longer but booking rates fall
+- SDR answers prospect objections with feature explanations
+- Questions disappear from call recordings — statements take over
+
+---
+
+## Stage 1 — The Open
+
+**Goal:** Earn 60 seconds of attention
+
+You have one job here: don't get hung up on. Lead with a reason that is relevant to *them* — a trigger event, a piece of industry news, something you noticed about their business. Never open with your company name and what you do. Make it about them in the first sentence.
+
+**Key principles:** Trigger-led open · Relevance first · No product mention
+
+**Opening lines:**
+
+- *"I noticed [company] just [trigger event] — that usually creates some interesting pressure around [relevant area]. Is that showing up for your team at all?"*
+- *"I've been talking to a lot of [role] in [industry] lately and the same challenge keeps coming up — [pain theme]. Are you running into anything like that?"*
+
+> **Coach note:** Do not mention your product in the open. The moment you say "we help companies like yours with X," you've given them something to say no to. The open should feel like a curious peer — not a vendor.
+
+---
+
+## Stage 2 — Surface the Pain
+
+**Goal:** Get the prospect thinking about a problem they own
+
+Ask questions that make the prospect think — not about your solution, but about their situation. The SDR needs deep industry knowledge to ask questions that feel perceptive. Shallow questions get shallow answers. Great pain questions make a prospect pause.
+
+**Pain questions — surface the problem:**
+
+- *"When [common industry challenge] happens, what does that typically cost your team in time or output?"*
+- *"How are you currently handling [problem area]? What's working well — and what's not?"*
+- *"If you could fix one thing about [process] tomorrow, what would it be?"*
+- *"Is this something that's on your radar to address this year, or more of a longer-term thing?"*
+
+> **Coach note:** When a prospect mentions a pain — go deeper, don't pivot to your solution. Say "tell me more about that" instead. The longer they talk about the pain, the more they own it.
+
+---
+
+## Stage 3 — Qualify — or Move On
+
+**Goal:** Confirm fit quickly without slowing momentum
+
+Weave qualifying questions into the pain conversation — never fire them in a block. A disqualifying signal is a gift: it lets you move on efficiently and protect your pipeline. A good SDR is as proud of a clean DQ as a booked meeting.
+
+**Qualifying questions — woven naturally into the conversation:**
+
+- *"How big is the team that would be affected by this?"*
+- *"Who else would typically be involved in a decision like this?"*
+- *"Are you the right person to be exploring this with, or would it make more sense to loop someone else in?"*
+- *"Do you have a current solution for this, or is it a gap you're living with right now?"*
+- **DQ Signal:** If no budget intent, no timeline, wrong decision-maker, and no pain — exit gracefully and move on.
+
+> **Coach note:** Qualifying is not interrogating. It should feel like natural curiosity. If an SDR is firing BANT questions in sequence, they've turned the call into an interview. Qualifying questions should follow the prospect's answers — not a checklist.
+
+---
+
+## Stage 4 — Deepen the Pain
+
+**Goal:** Make the problem feel urgent — without offering a solution
+
+This is the hardest stage to master and the one most SDRs skip. Once pain is confirmed, the instinct is to pitch. Resist it. Help the prospect feel the full weight of the problem — the cost, the frequency, the downstream impact. Only when they feel the pain strongly will they ask for help.
+
+**Deepening questions — amplify the pain without solving it:**
+
+- *"How long has this been going on? Has it gotten better or worse over the last year?"*
+- *"What happens downstream when [pain] occurs — who else does it affect?"*
+- *"If nothing changes in the next 12 months, what does that look like for you?"*
+- *"Have you tried to solve this before? What happened?"*
+- *"What would it mean for you personally if this got solved?"*
+
+> **Coach note:** The SDR's job is to hold the prospect in the pain — not rescue them from it. When a prospect says "yeah, it's a real problem," the right response is "how bad does it get?" Keep them there until they want out.
+
+---
+
+## Stage 5 — The Assumptive Close
+
+**Goal:** Book the meeting as if yes is already the answer
+
+When the prospect has acknowledged real pain and seems ready to explore, do not ask "would you be open to a call?" — that invites a no. Assume the yes. Present the next step as a logical, expected move. Control the booking: offer specific times, own the scheduling, and target the next call in under 3 days.
+
+**Assumptive close lines:**
+
+- *"Based on what you've described, it sounds like a conversation with one of our solution experts would be worth 20 minutes. I can get something on the calendar for Thursday — does morning or afternoon work better?"*
+- *"I'd love to connect you with someone who works on this specific challenge all day — are you free Wednesday or Thursday this week?"*
+- *"The person I'd want to connect you with has seen this exact problem at companies like yours. I can get you on their calendar before the end of the week — what does Thursday look like?"*
+
+**Booking rules:**
+
+| | Target | Maximum |
+|---|---|---|
+| Time to next call | ≤ 3 days | 7 days |
+| Why it matters | Prospect's pain is still fresh. Urgency is real. | Anything beyond 7 days is a probable no-show. |
+
+> **Coach note:** The SDR owns the booking discussion — not the prospect. Never say "send me some times that work." Offer two specific windows, confirm the time zone, and send the invite before ending the call.
+
+---
+
+## Stage 6 — Graceful Disqualification
+
+**Goal:** Exit cleanly, preserve the relationship, protect pipeline quality
+
+Not every prospect is a fit. A clean DQ protects the AE's time, keeps pipeline quality high, and keeps a door open for the future. Don't drag out calls that aren't going anywhere — and never let a prospect stay in the pipeline out of hope.
+
+**DQ exit lines:**
+
+- *"It sounds like the timing might not be right — I don't want to waste your time. Can I check back in [quarter]?"*
+- *"Based on what you've shared, it doesn't sound like we'd be the right fit right now — I appreciate your honesty. I'll make a note to reconnect when [condition] changes."*
+- *"It sounds like [decision-maker name] would be a better starting point — would you be open to making an intro, or should I reach out directly?"*
+
+---
+
+## The Curiosity Framework
+
+### Do This
+
+- Ask one question at a time
+- Stay silent after asking — let them think
+- Follow the prospect's answer, not your script
+- Ask "tell me more about that" liberally
+- Know the industry well enough to ask perceptive questions
+
+### Never Do This
+
+- Answer your own question
+- Pivot to your product when you hear pain
+- Stack multiple questions in one breath
+- Rescue the prospect from their pain too quickly
+- Let the prospect control the next-step timeline
+
+---
+
+*Blueprint · Sales Development Playbook · Open the account. Drive the curiosity. Book the call.*
+`;
+
+function downloadMarkdown() {
+  const blob = new Blob([MD_CONTENT], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sdr-workflow.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
 </body>
 </html>
